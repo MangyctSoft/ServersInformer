@@ -12,34 +12,34 @@ using System.Linq;
 namespace ServersInfo.BL
 {
     /// <summary>
-    /// Класс для работы с Google Sheets
+    /// Класс для работы с Google Sheets.
     /// </summary>
     public class GoogleSheetsHelper : IGoogleSheetsHelper
     {
         readonly string[] Scopes = { SheetsService.Scope.Spreadsheets };
         private readonly string ApplicationName = "Server Info 2020";
         /// <summary>
-        /// Идентификатор документа
+        /// Идентификатор документа.
         /// </summary>
         private readonly string _spreadsheetId;
         SheetsService service;
         /// <summary>
-        /// Местоположение строки подсчета свободного места
+        /// Местоположение строки подсчета свободного места.
         /// </summary>
         private int cellFooter;
         /// <summary>
-        /// Свободное место
+        /// Свободное место.
         /// </summary>
         private double freeSpace;
         /// <summary>
-        /// Общий размер всех БД на сервере
+        /// Общий размер всех БД на сервере.
         /// </summary>
         private double dbTotalSize;
         /// <summary>
-        /// Конструктор
+        /// Конструктор.
         /// </summary>
-        /// <param name="clientJson">Имя JSON-файла для связи с документов Google Sheets</param>
-        /// <param name="spreadsheetId">Идентификатор документа</param>
+        /// <param name="clientJson">Имя JSON-файла для связи с документов Google Sheets.</param>
+        /// <param name="spreadsheetId">Идентификатор документа.</param>
         public GoogleSheetsHelper(string clientJson, string spreadsheetId)
         {
             _spreadsheetId = spreadsheetId;
@@ -56,11 +56,11 @@ namespace ServersInfo.BL
             });
         }
         /// <summary>
-        /// Добавление записей в таблицу
+        /// Добавление записей в таблицу.
         /// </summary>
-        /// <param name="tableEntry">Список сведений о всех БД</param>
-        /// <param name="size">Размер дискового пространства на сервере</param>
-        public void CreateEntryTable(List<TableEntry> tableEntry, double size)
+        /// <param name="tableEntry">Список сведений о всех БД.</param>
+        /// <param name="size">Размер дискового пространства на сервере.</param>
+        public void CreateEntryTable(IEnumerable<TableEntry> tableEntry, double size)
         {
             cellFooter      = 0;
             freeSpace       = 0;
@@ -94,7 +94,7 @@ namespace ServersInfo.BL
             };
         }
         /// <summary>
-        /// Проверяет корректность идентификатора документа Google Sheets
+        /// Проверяет корректность идентификатора документа Google Sheets.
         /// </summary>
         /// <returns></returns>
         public bool CheckExistSpreadsheetId()
@@ -111,16 +111,20 @@ namespace ServersInfo.BL
             
         }
         /// <summary>
-        /// Обновить записи в таблице
+        /// Обновить записи в таблице.
         /// </summary>
-        /// <param name="sheet">Страница</param>
-        /// <param name="rows">Данные для занесения в таблицу</param>
-        private void UpdateEntry(string sheet, List<ServerDbInfo> rows)
+        /// <param name="sheet">Страница.</param>
+        /// <param name="rows">Данные для занесения в таблицу.</param>
+        private void UpdateEntry(string sheet, IEnumerable<ServerDbInfo> rows)
         {
+            // Настройки страницы с выводом информации
             var range       = $"{sheet}!A2";
             var valueRange  = new ValueRange();          
             var data        = new List<IList<object>>();
+            // Счетчик строк
             int i           = 2;
+            // Отступ для строки, показывающей свободное место
+            int shift       = 2;
             // Формируем данные для отправки в документ
             foreach (var item in rows)
             {
@@ -137,7 +141,7 @@ namespace ServersInfo.BL
                 i++;
             }            
             // Задаем отступ последней строки от данных
-            cellFooter      = i + 2;
+            cellFooter      = i + shift;
 
             // Отправляем запрос на изменение данных
             valueRange.Values = data;
@@ -146,9 +150,9 @@ namespace ServersInfo.BL
             updateRequest.Execute();
         }
         /// <summary>
-        /// Создание новой страницы
+        /// Создание новой страницы.
         /// </summary>
-        /// <param name="title">Заголовок страницы</param>
+        /// <param name="title">Заголовок страницы.</param>
         private void CreateNewSheet(string title)
         {
             var addSheetRequest = new AddSheetRequest();
@@ -161,9 +165,9 @@ namespace ServersInfo.BL
             batchUpdateRequest.Execute();
         }           
         /// <summary>
-        /// Создание заголовка
+        /// Создание заголовка.
         /// </summary>
-        /// <param name="sheet">Имя страницы</param>
+        /// <param name="sheet">Имя страницы.</param>
         private void CreateHeadSheet(string sheet)
         {
             var range       = $"{sheet}!A1:D1";
@@ -182,9 +186,9 @@ namespace ServersInfo.BL
             appendRequest.Execute();
         }
         /// <summary>
-        /// Очистка страницы
+        /// Очистка страницы.
         /// </summary>
-        /// <param name="sheet">Страница</param>
+        /// <param name="sheet">Страница.</param>
         private void DeleteEntry(string sheet)
         {
             var range           = $"{sheet}!A2:F50";
@@ -193,11 +197,11 @@ namespace ServersInfo.BL
             var deleteReponse   = deleteRequest.Execute();
         }
         /// <summary>
-        /// Создание последней строки с информацией о оставшемся свободном месте на сервере
+        /// Создание последней строки с информацией о оставшемся свободном месте на сервере.
         /// </summary>
-        /// <param name="sheet">Страница</param>
-        /// <param name="freeSpace">Свободное место</param>
-        /// <param name="update">Дата обновления</param>
+        /// <param name="sheet">Страница.</param>
+        /// <param name="freeSpace">Свободное место.</param>
+        /// <param name="update">Дата обновления.</param>
         private void CreateCellFooter(string sheet, double freeSpace, string update)
         {
             var range       = $"{sheet}!A{cellFooter}";

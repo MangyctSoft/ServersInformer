@@ -3,25 +3,25 @@
 namespace ServersInfo.Models
 {
     /// <summary>
-    /// Структура конфигурационного файла
+    /// Структура конфигурационного файла.
     /// </summary>
     public class ConfigXML
     {
         /// <summary>
-        /// Время ожидания
+        /// Время ожидания.
         /// </summary>
         public int TimeOut { get; set; }
         /// <summary>
-        /// Имя JSON-файла с учетными данными
+        /// Имя JSON-файла с учетными данными.
         /// </summary>
         public string ClientJson { get; set; }
         /// <summary>
-        /// Идентификатор документа с таблицами
+        /// Идентификатор документа с таблицами.
         /// </summary>
         public string SpreadsheetId { get; set; }
         /// <summary>
-        /// Список серверов
+        /// Список серверов.
         /// </summary>
-        public List<Server> Servers { get; set; }
+        public IEnumerable<Server> Servers { get; set; }
     }
 }

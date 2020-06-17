@@ -48,7 +48,7 @@ namespace ServersInfo
             }
             Console.Write("Успешно.\n");
 
-            GoogleSheetsUpdateAsync();
+            Task.Run(() => GoogleSheetsUpdate());
 
             Console.ReadLine();            
         }
@@ -65,13 +65,13 @@ namespace ServersInfo
         /// <returns></returns>
         static bool Initialization()
         {
-            InitialApp.Run();
+            InitialConfing.Create();
             dbHelper    = new DatabaseHelper();
             // Проверяем существование JSON-файла, прописанного в конфигурационном файле
-            string path = Path.Combine(Environment.CurrentDirectory, InitialApp.ClientJson);
+            string path = Path.Combine(Environment.CurrentDirectory, InitialConfing.ClientJson);
             if (File.Exists(path))
             {
-                googleSheets = new GoogleSheetsHelper(InitialApp.ClientJson, InitialApp.SpreadsheetId);
+                googleSheets = new GoogleSheetsHelper(InitialConfing.ClientJson, InitialConfing.SpreadsheetId);
                 return true;
             }
             else
@@ -88,7 +88,7 @@ namespace ServersInfo
             while (true)
             {
                 // Обходим список серверов из конфигурационного файла
-                foreach (var item in InitialApp.Servers)
+                foreach (var item in InitialConfing.Servers)
                 {
                     var list = dbHelper.GetDatabaseInfo(item.ToString());
                     // Если на сервере есть БД, добавить информацию в Google Sheets
@@ -106,7 +106,7 @@ namespace ServersInfo
                 }
                 //Console.WriteLine($"{ DateTime.Now} :: Документ обновлен.");
                 Console.WriteLine($"{ DateTime.Now} :: Ожидание...");
-                Thread.Sleep(InitialApp.TimeOut);
+                Thread.Sleep(InitialConfing.TimeOut);
             }
         }
 

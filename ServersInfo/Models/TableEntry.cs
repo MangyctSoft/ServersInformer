@@ -4,32 +4,34 @@ using System.Collections.Generic;
 namespace ServersInfo.Models
 {
     /// <summary>
-    /// Информация, заносимая в таблицу
+    /// Информация, заносимая в таблицу.
     /// </summary>
     public class TableEntry
     {
         /// <summary>
-        /// Хост сервера
+        /// Хост сервера.
         /// </summary>
         public string ServerHost { get; set; }
         /// <summary>
-        /// Информация о сервере
+        /// Список свединей серверов.
         /// </summary>
-        public List<ServerDbInfo> ServerDbInfos { get; set; }
+        public IEnumerable<ServerDbInfo> ServerDbInfos { get; set; }
     }
-
+    /// <summary>
+    /// Информация базы данных на сервере.
+    /// </summary>
     public class ServerDbInfo
     {
         /// <summary>
-        /// Имя БД
+        /// Имя БД.
         /// </summary>
         public string DatabaseName { get; set; }
         /// <summary>
-        /// Размер БД
+        /// Размер БД.
         /// </summary>
         public string DatabaseSize { get; set; }
         /// <summary>
-        /// Дата обновления
+        /// Дата обновления.
         /// </summary>
         public string DateUpdated { get; set; }
     }

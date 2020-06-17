@@ -7,32 +7,31 @@ using System.Xml.Serialization;
 namespace ServersInfo
 {
     /// <summary>
-    /// Инициализация приложения - проверка на наличие конфигурационного файлов.
+    /// Класс для проверки на наличие конфигурационного файла.
     /// </summary>
-    public static class InitialApp
+    /// <remarks>В случаи отсутствия конфигурационного файла, создает его.</remarks>
+    public static class InitialConfing
     {
         /// <summary>
-        /// Время ожидания до обновления (миллисекунды)
-        /// </summary>
+        /// Время ожидания до обновления (миллисекунды).
+        /// </summary>       
         public static int TimeOut { get; private set; }
         /// <summary>
-        /// Имя клиент JSON-файла
+        /// Имя клиент JSON-файла.
         /// </summary>
         public static string ClientJson { get; private set; }
         /// <summary>
-        /// Идентификатор документа
+        /// Идентификатор документа.
         /// </summary>
         public static string SpreadsheetId { get; private set; }
         /// <summary>
-        /// Список серверов
+        /// Список серверов.
         /// </summary>
-        public static List<Server> Servers { get; private set; }       
-
+        public static IEnumerable<Server> Servers { get; private set; }      
         /// <summary>
-        /// Главный метод инициализации, проверка конфигурационного файла
-        /// и создание его, если он отсутствует.
+        /// Открыть или создать конфигурационный файл.
         /// </summary>
-        public static void Run()
+        public static void Create()
         {
             try
             {
@@ -54,9 +53,9 @@ namespace ServersInfo
         }
         /// <summary>
         /// Создание, заполнение данными по умолчанию
-        /// и сериализация конфигурационного файла
+        /// и сериализация конфигурационного файла.
         /// </summary>
-        /// <param name="xmlFile">Путь к файлу</param>
+        /// <param name="xmlFile">Путь к файлу.</param>
         private static void CreateConfig(string path)
         {
             var server1 = new Server
@@ -85,11 +84,11 @@ namespace ServersInfo
                 xs.Serialize(stream, configXML);
                 SetPropeties(configXML);
             }
-        }        
+        }
         /// <summary>
-        /// Открытие и десериализация конфигурационного файла
+        /// Открытие и десериализация конфигурационного файла.
         /// </summary>
-        /// <param name="path"></param>
+        /// <param name="path">Путь к файлу.</param>
         private static void OpenConfig(string path)
         {
             using (FileStream xmlLoad = File.Open(path, FileMode.Open))
@@ -100,9 +99,9 @@ namespace ServersInfo
             }
         }
         /// <summary>
-        /// Установка свойств для работы с Google Tables
+        /// Установка свойств для работы с Google Tables.
         /// </summary>
-        /// <param name="configXML"></param>
+        /// <param name="configXML"><see cref="ConfigXML"/></param>
         private static void SetPropeties(ConfigXML configXML)
         {
             TimeOut         = configXML.TimeOut;

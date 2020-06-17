@@ -7,16 +7,16 @@ using System.Collections.Generic;
 namespace ServersInfo.BL
 {
     /// <summary>
-    /// Класс для работы с БД
+    /// Класс для работы с БД.
     /// </summary>
-    public class DatabaseHelper : IDatabaseHelper
+    public sealed class DatabaseHelper : IDatabaseHelper
     {
         /// <summary>
-        /// Получает информацию по каждой БД
+        /// Получает информацию по каждой БД.
         /// </summary>
-        /// <param name="connectionString">Строка подключения к серверу</param>
-        /// <returns></returns>
-        public virtual List<ServerDbInfo> GetDatabaseInfo(string connectionString)
+        /// <param name="connectionString">Строка подключения к серверу.</param>
+        /// <returns>Возвращает сведения по всем базам данных с сервера.</returns>
+        public IEnumerable<ServerDbInfo> GetDatabaseInfo(string connectionString)
         {
             var result = new List<ServerDbInfo>();
             using (var conn = new NpgsqlConnection(connectionString))
@@ -57,10 +57,10 @@ namespace ServersInfo.BL
             return result;
         }
         /// <summary>
-        /// Получить список всех БД с сервера, кроме временных
+        /// Получить список всех БД с сервера, кроме временных.
         /// </summary>
-        /// <param name="conn">Сервер</param>
-        /// <returns></returns>
+        /// <param name="conn">Сервер.</param>
+        /// <returns>Возвращает массив имен баз данных.</returns>
         private string[] GetDatabases(NpgsqlConnection conn)
         {
             var result = new List<string>();
@@ -79,19 +79,19 @@ namespace ServersInfo.BL
             return result.ToArray();
         }
         /// <summary>
-        /// Перевод размер БД в Гб
+        /// Перевод размер базы данных в Гб.
         /// </summary>
-        /// <param name="size">Размер БД</param>
-        /// <returns></returns>
+        /// <param name="size">Размер базы данных.</param>
+        /// <returns>Возвращает размер базы данных в строковом виде.</returns>
         private string SetGigabyteSize(double size)
         {
             return (size / 1000000000).ToString("#.###");
         }
         /// <summary>
-        /// Получить Host сервера
+        /// Получить Host сервера.
         /// </summary>
-        /// <param name="connectionString">Строка подключения</param>
-        /// <returns></returns>
+        /// <param name="connectionString">Строка подключения.</param>
+        /// <returns>Возвращает имя сервера.</returns>
         private string GetHostServer(string connectionString)
         {
             var arrayOption = connectionString.Split(";");
