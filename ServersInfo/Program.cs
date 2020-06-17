@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ServersInfo.BL;
@@ -52,15 +53,9 @@ namespace ServersInfo
 
             Console.ReadLine();            
         }
+       
         /// <summary>
-        /// Асинхронное обновление документа Google Sheet
-        /// </summary>
-        static async void GoogleSheetsUpdateAsync()
-        {
-            await Task.Run(() => GoogleSheetsUpdate());
-        }
-        /// <summary>
-        /// Инициализация и проверка параметров
+        /// Инициализация и проверка параметров.
         /// </summary>
         /// <returns></returns>
         static bool Initialization()
@@ -78,20 +73,19 @@ namespace ServersInfo
             {
                 return false;
             }            
-        }    
+        }
         /// <summary>
-        /// Обновление документа Google Sheets
+        /// Обновление документа Google Sheets каждые <see cref="InitialConfing.TimeOut"/>.
         /// </summary>
         static void GoogleSheetsUpdate()
-        {
-            // Повторять каждые  InitialApp.TimeOut
+        {          
             while (true)
             {
-                // Обходим список серверов из конфигурационного файла
+                // Обходим список серверов из конфигурационного файла.
                 foreach (var item in InitialConfing.Servers)
                 {
-                    var list = dbHelper.GetDatabaseInfo(item.ToString());
-                    // Если на сервере есть БД, добавить информацию в Google Sheets
+                    var list = dbHelper.GetDatabaseInfo(item.ToString()).ToList();
+                    // Если на сервере есть БД, добавить информацию в Google Sheets.
                     if (list.Count > 0)
                     {
                         var table = new List<TableEntry>();
