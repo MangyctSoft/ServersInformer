@@ -22,6 +22,6 @@ namespace ServersInfo.Models
         /// <summary>
         /// Список серверов.
         /// </summary>
-        public IEnumerable<Server> Servers { get; set; }
+        public List<Server> Servers { get; set; }
     }
 }

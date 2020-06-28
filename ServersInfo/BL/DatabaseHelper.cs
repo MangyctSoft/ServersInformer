@@ -1,5 +1,4 @@
-﻿using Npgsql;
-using ServersInfo.Interface;
+﻿using ServersInfo.Interface;
 using ServersInfo.Models;
 using System;
 using System.Collections.Generic;
@@ -11,17 +10,22 @@ namespace ServersInfo.BL
     /// </summary>
     public sealed class DatabaseHelper : IDatabaseHelper
     {
+        IDbService dbService;
+        public DatabaseHelper(IDbService dbService)
+        {
+            this.dbService = dbService;
+        }
         /// <summary>
         /// Получает информацию по каждой БД.
         /// </summary>
         /// <param name="connectionString">Строка подключения к серверу.</param>
         /// <returns>Возвращает сведения по всем базам данных с сервера.</returns>
-        public IEnumerable<ServerDbInfo> GetDatabaseInfo(string connectionString)
+        public IEnumerable<ServerDbInfo> GetDatabaseInfo()
         {
             var result = new List<ServerDbInfo>();
-            using (var conn = new NpgsqlConnection(connectionString))
+            using (var conn = dbService.SetConnection())
             {
-                var host = GetHostServer(connectionString);
+                var host = GetHostServer(conn.ConnectionString);
                 Console.Write($"{DateTime.Now} :: Подключение к серверу {host} ... ");
                 try
                 {
@@ -33,11 +37,11 @@ namespace ServersInfo.BL
                     return result;
                 }
                 Console.Write("Подключен.\n");
-                string [] dbNames = GetDatabases(conn);
+                string [] dbNames = GetDatabases();
                 for (int i = 0; i < dbNames.Length; i++)
                 {
                     // Запросить размер БД
-                    using (var command = new NpgsqlCommand($"SELECT pg_database_size('{dbNames[i]}');", conn))
+                    using (var command = dbService.GetDbSize(dbNames[i]))
                     {
                         var reader = command.ExecuteReader();
                         while (reader.Read())
@@ -49,6 +53,7 @@ namespace ServersInfo.BL
                                 DateUpdated = DateTime.Now.ToString()
                             };
                             result.Add(item);
+                            Console.WriteLine($"{DateTime.Now} :: БД: {item.DatabaseName}; Размер: {item.DatabaseSize}; Дата: {item.DateUpdated}");
                         }
                         reader.Close();
                     }
@@ -61,11 +66,11 @@ namespace ServersInfo.BL
         /// </summary>
         /// <param name="conn">Сервер.</param>
         /// <returns>Возвращает массив имен баз данных.</returns>
-        private string[] GetDatabases(NpgsqlConnection conn)
+        private string[] GetDatabases()
         {
             var result = new List<string>();
             // Запросить список всех БД, кроме временных
-            using (var command = new NpgsqlCommand($"SELECT datname FROM pg_database WHERE datistemplate = false;", conn))
+            using (var command = dbService.GetDbList())
             {
                 var reader = command.ExecuteReader();
 

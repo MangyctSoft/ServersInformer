@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using ServersInfo.BL;
 using ServersInfo.Interface;
 using ServersInfo.Models;
+using ServersInfo.Service;
 
 namespace ServersInfo
 {
@@ -61,7 +62,7 @@ namespace ServersInfo
         static bool Initialization()
         {
             InitialConfing.Create();
-            dbHelper    = new DatabaseHelper();
+            
             // Проверяем существование JSON-файла, прописанного в конфигурационном файле
             string path = Path.Combine(Environment.CurrentDirectory, InitialConfing.ClientJson);
             if (File.Exists(path))
@@ -84,7 +85,8 @@ namespace ServersInfo
                 // Обходим список серверов из конфигурационного файла.
                 foreach (var item in InitialConfing.Servers)
                 {
-                    var list = dbHelper.GetDatabaseInfo(item.ToString()).ToList();
+                    dbHelper = new DatabaseHelper(new DbNpgsqlService(item.ToString()));
+                    var list = dbHelper.GetDatabaseInfo().ToList();
                     // Если на сервере есть БД, добавить информацию в Google Sheets.
                     if (list.Count > 0)
                     {
@@ -98,7 +100,7 @@ namespace ServersInfo
                         googleSheets.CreateEntryTable(table, item.Size);                        
                     }                    
                 }
-                //Console.WriteLine($"{ DateTime.Now} :: Документ обновлен.");
+                Console.WriteLine($"{ DateTime.Now} :: Документ обновлен.");
                 Console.WriteLine($"{ DateTime.Now} :: Ожидание...");
                 Thread.Sleep(InitialConfing.TimeOut);
             }

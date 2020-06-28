@@ -13,6 +13,6 @@ namespace ServersInfo.Interface
         /// </summary>
         /// <param name="connectionString">Строка подключения к серверу.</param>
         /// <returns></returns>
-        IEnumerable<ServerDbInfo> GetDatabaseInfo(string connectionString);
+        IEnumerable<ServerDbInfo> GetDatabaseInfo();
     }
 }
